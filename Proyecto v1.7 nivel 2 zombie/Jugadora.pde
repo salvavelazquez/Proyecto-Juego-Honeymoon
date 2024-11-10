@@ -9,7 +9,7 @@ class Jugadora {
   PImage miraDerecha, miraIzquierda, caminaDerecha, caminaIzquierda;
   PImage imagenActual;
   float posicionX;
-  float velocidad = 6;
+  float velocidad = 7;
   boolean enMovimiento = false;
   boolean apuntaDerecha = false;
   
@@ -54,7 +54,7 @@ class Jugadora {
       tint(44, 232, 16); // Aplicar un tinte rojo a Honeymon
     } else {
       noTint(); // Volver a los colores normales
-    }
+    } 
     
     if (poderActivado){
       if (apuntaDerecha) {
@@ -174,7 +174,13 @@ class Jugadora {
   
   // Método para verificar colisión con el enemigo (dona)
   boolean verificarColisionEnemigo(Enemigo enemigo) {
+    println(enemigo.ancho);
     // Colisión simple basada en la distancia entre los centros de Honeymon y el enemigo
+    //if (posicionX < enemigo.x + enemigo.ancho &&
+    //       posicionX + imagenActual.width > enemigo.x &&
+    //       posicionY < enemigo.y + enemigo.alto &&
+    //       posicionY + imagenActual.height > enemigo.y) {
+    //  return true;
     if (dist(posicionX, posicionY+20, enemigo.x + enemigo.ancho / 2, enemigo.y + enemigo.alto / 2) < (enemigo.ancho / 2 + 25)) {
       return true;
     }
@@ -199,10 +205,10 @@ class Jugadora {
         estaHerido = true; // Activar el estado de herido
         colisionandoConDona = true; // Indicar que está colisionando
         println("¡Colisión con el enemigo! Vidas restantes: " + vidas);
-        if (vidas <= 0) {
+        if (vidas <= 0 || enemigo instanceof Zombie) {
           juegoTerminado = true;
           println("Game Over");
-          // Aquí podrías añadir lógica para reiniciar el nivel o finalizar el juego
+          
         }
       }
     } else {

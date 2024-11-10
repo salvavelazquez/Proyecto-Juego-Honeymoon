@@ -7,13 +7,15 @@ class MonstruoSlime extends Enemigo {
   boolean destruido = false;
   
   // Ajustar el tamaño aquí
-  float ancho = 80; // Ancho del monstruo slime (cambiar a un tamaño mayor)
-  float alto = 100; // Alto del monstruo slime (cambiar a un tamaño mayor)
+  float anchoSlime = 80; // Ancho del monstruo slime (cambiar a un tamaño mayor)
+  float altoSlime = 100; // Alto del monstruo slime (cambiar a un tamaño mayor)
 
    MonstruoSlime(PImage[] animFrames, float posX, float posY) {
     super(animFrames[0], posX, posY); // Inicializa con el primer frame
     frames = animFrames;
     velocidadX = random(4, 9);
+    ancho =  anchoSlime; 
+    alto = altoSlime;
   }
 
 

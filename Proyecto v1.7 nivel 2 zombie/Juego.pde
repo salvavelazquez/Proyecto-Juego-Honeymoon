@@ -1,5 +1,6 @@
 Jugadora honeymoon;
 Enemigo enemigo; // Declara el objeto enemigo
+Enemigo zombie;
 Dialogo dialogoHada;
 Nube nube;   
 
@@ -8,9 +9,10 @@ PImage hadaguia;
 PImage fondoNivel1, fondoNivel2, fondo, fondoRedimensionado;
 PImage donaImagen;
 PImage[] slimeFrames = new PImage[4];
+PImage[] zombieFrames = new PImage[3];
 
 float  fondoX = 0;  // Variable para controlar la posición del fondo
-float  fondoVelocidad = 4;  // Velocidad de desplazamiento del fondo
+float  fondoVelocidad = 10;  // Velocidad de desplazamiento del fondo
 
 
 ArrayList<Enemigo> enemigos;
@@ -27,6 +29,7 @@ String[] dialogoNivel1 = {
   "¡Bien hecho! Curaste el mundo de caramelos!!",
   "Tengo noticias que la corona lo tiene el lider de los Egs,",
   "Una extraña figura envuelta en una capa oscura...",
+  "Escapa del zombie gigante! no dejes que te aplaste!",
   "Continua con tu viaje, fuerzas!!"
 };
 
@@ -34,6 +37,7 @@ String[] dialogoNivel1 = {
 boolean juegoIniciado = false; // Controla si el juego ha comenzado
 boolean nivel1Completado = false; // Variables para manejar el círculo y los niveles
 boolean slimeAgregado = false;
+boolean zombieAgregado = false;
 
 
 void setup() {
@@ -43,7 +47,7 @@ void setup() {
   //int segundaPantallaX = pantallaPrincipalWidth; // Mueve a la derecha de la pantalla principal
   //int segundaPantallaY = 0; // Mantiene la ventana en la parte superior de la segunda pantalla
 
-  // Ubica la ventana en la segunda pantalla
+  //// Ubica la ventana en la segunda pantalla
   //surface.setLocation(segundaPantallaX, segundaPantallaY);
   
   
@@ -78,13 +82,19 @@ void setup() {
   bolaGris = loadImage("/bolasdepapel/gris.png");
   bolaVerde = loadImage("/bolasdepapel/verde.png");
   
-  donaImagen = loadImage("/juego/rollut.png"); // Cargar la imagen de la dona rollut
+  donaImagen = loadImage("/enemigos/rollut.png"); // Cargar la imagen de la dona rollut
   
    // Cargar los frames de animación del monstruo slime
-  slimeFrames[0] = loadImage("/juego/1.png");
-  slimeFrames[1] = loadImage("/juego/2.png");
-  slimeFrames[2] = loadImage("/juego/3.png");
-  slimeFrames[3] = loadImage("/juego/4.png");
+  slimeFrames[0] = loadImage("/enemigos/slime/1.png");
+  slimeFrames[1] = loadImage("/enemigos/slime/2.png");
+  slimeFrames[2] = loadImage("/enemigos/slime/3.png");
+  slimeFrames[3] = loadImage("/enemigos/slime/4.png");
+  
+  zombieFrames[0] = loadImage("/enemigos/zombie/1.png");
+  zombieFrames[1] = loadImage("/enemigos/zombie/2.png");
+  zombieFrames[2] = loadImage("/enemigos/zombie/3.png");
+  
+  zombie = new Zombie(zombieFrames, width-100, height -364);
   
   // Inicializar la lista de enemigos con 3 donas
   enemigos = new ArrayList<Enemigo>();
@@ -144,7 +154,7 @@ void draw() {
               
               
               // Verificar si el contadorBolas ha alcanzado el límite
-              if (honeymoon.contadorBolas > 20 && slimeAgregado == false) {
+              if (honeymoon.contadorBolas > 10 && slimeAgregado == false) {
                 fondo = fondoNivel2;
                 // Añadir dos monstruos slime al juego
                 enemigos.add(new MonstruoSlime(slimeFrames, random(100, width - 100), height - 150));
@@ -153,7 +163,7 @@ void draw() {
               }
               
               // Verificar si el contadorBolas ha alcanzado el límite para nivel 2
-              if (honeymoon.contadorBolas > 30) {
+              if (honeymoon.contadorBolas > 15) {
                 nivel1Completado = true; // Cambiar a nivel 2
                 dialogoHada = new Dialogo(dialogoNivel1, hadaguia); 
                 juegoIniciado = false;
@@ -161,9 +171,18 @@ void draw() {
               
             } else {
               // Nivel 2: fondo en movimiento
+              
+              //if (!zombieAgregado) {
+              //      enemigos.add(new Zombie(zombieFrames, width, height - 180)); // Agrega el zombie desde el lado derecho
+              //      zombieAgregado = true;
+              //}
+              
               fill(255);
               textSize(30);
               text("Vidas: " + honeymoon.vidas, width-370, 80);
+              
+              // Mantener honeymoon en el centro de la pantalla
+              honeymoon.posicionX = width / 2;
               
               if (honeymoon.enMovimiento) {
                 if (honeymoon.apuntaDerecha) {
@@ -173,6 +192,10 @@ void draw() {
                 }
               }
               
+              
+              
+              
+              
               // Mantener el fondo en bucle
               if (fondoX <= -fondo.width) {
                 fondoX = 0;
@@ -180,7 +203,24 @@ void draw() {
               if (fondoX >= 0) {
                 fondoX = -fondo.width;
               }
+              
+              
+              // Mostrar y mover enemigos en el nivel 2, incluido el zombie
+              zombie.mover();
+              zombie.mostrar();
+              honeymoon.manejarColisionEnemigo(zombie);
+              
             }
+            
+      
+            
+            //for (Enemigo enemigo : enemigos) {
+            //  enemigo.mover();
+            //  enemigo.mostrar();
+            //  honeymoon.manejarColisionEnemigo(enemigo); // Detectar colisiones
+            //}
+            
+            
       
     }else{
       textSize(60);
