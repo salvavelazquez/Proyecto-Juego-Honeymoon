@@ -17,7 +17,7 @@ class Dialogo {
     // Mostrar texto del diálogo
     fill(0); 
     textSize(25);
-    text(dialogos[estadoDialogo], 305, height/2 - 2, width - 140, 140); 
+    text(dialogos[estadoDialogo], width/2-300, height/2 - 2, width - 140, 140); 
     
     // Mostrar imagen del hada
     image(hada, width - 400, height / 2 + 50, 130, 130);
