@@ -11,8 +11,10 @@ class Jugadora {
   boolean poderActivado = false;
   
   int poderFrame = 0;
-  int poderFrameDelay = 10;
+  int poderFrameDelay = 5;
   int poderFrameCount = 0;
+  
+  int contadorBolas = 0; // Contador para las bolas de papel recogidas
 
   // Constructor para inicializar las imágenes y el estado inicial
   Jugadora() {
@@ -87,4 +89,16 @@ class Jugadora {
   void detenerMovimiento() {
     enMovimiento = false;
   }
+  
+  // Método para manejar la colisión con bolas de papel
+  void verificarColisiones(ArrayList<BolaPapel> bolasPapel) {
+    for (int i = bolasPapel.size() - 1; i >= 0; i--) {
+      BolaPapel bola = bolasPapel.get(i);
+      if (dist(posicionX, height - 100, bola.x + bola.ancho / 2, bola.y + bola.alto / 2) < (bola.ancho / 2 + 15)) {
+        bolasPapel.remove(i); // Eliminar la bola de papel
+        contadorBolas++; // Incrementar el contador
+      }
+    }
+  }
+
 }
