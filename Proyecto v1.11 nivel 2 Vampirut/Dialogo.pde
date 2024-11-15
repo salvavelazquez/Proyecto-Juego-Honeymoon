@@ -23,6 +23,18 @@ class Dialogo {
     image(hada, width - 400, height / 2 + 50, 130, 130);
     if(dialogoCarameloMostrado) image(carameloImagen, width - 230, height - 280);
   }
+  
+  //Dialogo Jefe Final
+  void dialogoVampirut() {
+    fill(255, 255, 255, 200);  // Fondo blanco semitransparente para el diálogo
+    rect(280, 330, width/2 + 100, 150, 20);  // Crear el globo de diálogo
+    
+    // Mostrar texto del diálogo
+    fill(0); 
+    textSize(25);
+    text(dialogos[estadoDialogo], width/2-300, height/2 - 2, width - 140, 140); 
+    
+  }
 
   // Avanzar al siguiente diálogo
   void avanzarDialogo() {
@@ -37,8 +49,7 @@ class Dialogo {
     }else{
       return false;
     }
-    
-    //return estadoDialogo >= dialogos.length;
+   
   }
   
   

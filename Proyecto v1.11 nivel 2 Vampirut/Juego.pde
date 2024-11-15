@@ -4,12 +4,13 @@ Jugadora honeymoon;
 Enemigo enemigo; // Declara el objeto enemigo
 Enemigo zombie;
 Dialogo dialogoHada;
+Dialogo dialogoJefe;
 Nube nube;   
 
 
 PImage imagenNube, bolaAmarilla, bolaRosa, bolaGris, bolaVerde;
 PImage hadaguia;
-PImage fondoNivel1, fondoNivel2, fondoNivel3, fondo, fondoRedimensionado;
+PImage fondoNivel1, fondoNivel2, fondoNivel3,fondoNivel4, fondo, fondoRedimensionado;
 PImage donaImagen, zombieaux;
 PImage plataformaChocolate;
 PImage carameloImagen;
@@ -44,17 +45,31 @@ String[] dialogoNivel1 = {
 boolean dialogoCarameloMostrado = false;
 String[] dialogoCaramelo = {
     "          ¡Has encontrado el caramelo especial!",
-    "       ahora podrás volar y lanzar bolas de fuego! :D "
+    "           Tendrás nuevos movimientos!! "
 };
 
-boolean juegoIniciado = true; // Controla si el juego ha comenzado
-boolean nivel1Completado = true; // Variables para manejar el círculo y los niveles
+String[] dialogoJefeFinal = {
+    "          ¡bla bla bla soy vampirut y robe la corona de caramelos",
+    "           Podras determe? no lo creo bla bla bla... "
+};
+
+boolean juegoIniciado = false; // Controla si el juego ha comenzado
+boolean nivel1Completado = false; // Variables para manejar el círculo y los niveles
 boolean parteDos = false;
 boolean slimeAgregado = false;
 boolean zombieAgregado = false;
 float plataformaX = 0;
 int indicePlataformaActual = -1;
 
+
+boolean animacionFondoActiva = false;  // Indica si la animación del fondo está activa
+int tiempoInicioAnimacion;             // Tiempo de inicio de la animación
+int fondoActual = 1;                   // Alterna entre los dos fondos
+//boolean vampiroMostrado = false;       // Controla si el vampiro ya se mostró
+PImage vampiro; 
+float vampiroX = -600;
+boolean  inicioDialogoVampiro = false; 
+boolean finalDialogoVampiro = false; 
 
 void setup() {
   fullScreen();
@@ -76,18 +91,22 @@ void setup() {
   fondoNivel1 = loadImage("/juego/FondoPalido.jpg"); // Fondo para nivel 1
   fondoNivel2 = loadImage("/juego/Fondo2tonos.jpg"); // Fondo para nivel 2
   fondoNivel3 = loadImage("/juego/FondoFuerte.jpg"); // Fondo para nivel 3
+  fondoNivel4 = loadImage("/juego/FondoInverso.jpg");
+  vampiro = loadImage("/enemigos/vampirodona.png");  // Carga la imagen del vampiro
+  vampiro.resize(209, 272); 
   
   // Redimensionar los fondos
   fondoNivel1.resize(width, height);
   fondoNivel2.resize(width, height);
   fondoNivel3.resize(width, height);
+  fondoNivel4.resize(width, height);
   
   fondo = fondoNivel3;
   
   
   // Inicializar la clase DialogoHada con los diálogos y la imagen del hada
   dialogoHada = new Dialogo(dialogoInicial, hadaguia);
-  
+  dialogoJefe = new Dialogo(dialogoJefeFinal, vampiro );
   
  // Cargar la imagen de la nube
   imagenNube = loadImage("/juego/nube.png"); 
@@ -141,6 +160,8 @@ void setup() {
   for (int i = 0; i < 3; i++) {
     enemigos.add(new Rollut(donaImagen, random(100, width - 100), random(100, height - 150)));
   }
+  
+  
   
   // Solicita el foco para la ventana al inicio
   Canvas canvas = (Canvas) surface.getNative();
@@ -275,11 +296,62 @@ void draw() {
                           juegoIniciado = false;
                           dialogoCarameloMostrado = true;
                           fondoX = 0;
+                }else{
+                
+                    fill(255);
+                    textSize(30);
+                    text("Vidas: " + honeymoon.vidas, width-370, 80);
+                    
+                    if (!animacionFondoActiva) {
+                      animacionFondoActiva = true;
+                      tiempoInicioAnimacion = millis();  // Guarda el tiempo de inicio de la animación
+                    }
+                    
+                    int tiempoTranscurrido = millis() - tiempoInicioAnimacion;
+                    
+                    if (tiempoTranscurrido < 5500) {  // Cambia los fondos durante 5 segundos
+                      if (tiempoTranscurrido / 1000 % 2 == 0) {
+                        fondo = fondoNivel3;  // Fondo alternativo
+                      } else {
+                        fondo = fondoNivel4;  // Otro fondo alternativo
+                      }
+                      image(fondo, 0, 0, width, height);  // Dibuja el fondo actual
+                      
+                      //if (animacionVampiroActiva) {
+                        if (vampiroX < 50) {
+                            vampiroX += 2; // Incrementa x para mover el vampiro hacia la derecha
+                         //}else{
+                           //animacionVampiroActiva = false;
+                         }
+                          //image(vampiroImagen, vampiroX, height - vampiroImagen.height - 50); // Dibuja el vampiro en la posición actual
+                      //}
+                      image(vampiro, vampiroX , height / 2 - vampiro.height / 2);
+                    } else {
+                      
+                      
+                      fondo = fondoNivel4;  // Fija un fondo después de la animación
+                      image(fondo, 0, 0, width, height);
+                       
+                       
+                       
+                                      //if (!vampiroMostrado) {
+                      image(vampiro, vampiroX , height / 2 - vampiro.height / 2);  // Dibuja el vampiro en el centro
+                      //vampiroMostrado = true;
+                    //} 
+                    if (!finalDialogoVampiro) {
+                          // Mostrar diálogo una vez que el vampiro llega a su posición
+                          //fill(0); // Color del texto
+                          //textSize(18); // Tamaño del texto
+                          //text("Yo soy el que robó la corona ujajaj", vampiroX+500, height - vampiro.height - 60);
+                          inicioDialogoVampiro = true; // Evita que se repita el diálogo
+                          dialogoJefe.dialogoVampirut();
+                      }
+                     
+                    }
+                
                 }
                 
-                fill(255);
-                textSize(30);
-                text("Vidas: " + honeymoon.vidas, width-370, 80);              
+                
               }
               
                              
@@ -318,20 +390,38 @@ void reinicioDeNivel() {
         
     }else {
       juegoIniciado = false;
+      fondo = fondoNivel3;
       ((Zombie)zombie).reiniciar();
       //plataformas.clear();
       plataformaX = 0;
+      parteDos = false;
+      finalDialogoVampiro = false;
+      inicioDialogoVampiro = false;
+      animacionFondoActiva = false; 
+      dialogoCarameloMostrado = false;
+      dialogoHada = new Dialogo(dialogoNivel1, hadaguia); 
+      vampiroX = - 600;
     }
 }
 
 void keyPressed() {
- if (!juegoIniciado) {
-    if (key == ' ') {
-      dialogoHada.avanzarDialogo();
-      if (dialogoHada.dialogoTerminado()) {
-        juegoIniciado = true;  // Cuando se acaba el diálogo, inicia el juego
+ if (!juegoIniciado || inicioDialogoVampiro) {
+   if (key == ' ') {
+     if(!inicioDialogoVampiro){
+         dialogoHada.avanzarDialogo();
+         if (dialogoHada.dialogoTerminado()) {
+            juegoIniciado = true;  // Cuando se acaba el diálogo, inicia el juego
+         }
+      }else{ 
+          dialogoJefe.avanzarDialogo();
+          if (dialogoJefe.dialogoTerminado()) {
+             finalDialogoVampiro = true;
+             inicioDialogoVampiro = false;
+           }
       }
-    }
+   
+   } 
+    
   } else {
     if (keyCode == RIGHT) {
       honeymoon.activarMovimiento(true);
@@ -340,8 +430,13 @@ void keyPressed() {
     } else if (key == ' ') {
       honeymoon.activarPoder();
     } else if (keyCode == UP) { // Tecla para saltar
-      honeymoon.saltar();
-      //println("Salto!");
+      if(!parteDos){
+        honeymoon.saltar();
+      }else{  honeymoon.arriba = true; }
+    }else if(keyCode == DOWN){
+      if(parteDos){
+        honeymoon.arriba = false;
+      }
     } else if (key == 'r' || key == 'R') {
               
         loop();

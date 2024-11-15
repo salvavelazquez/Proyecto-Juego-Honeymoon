@@ -15,6 +15,7 @@ class Jugadora {
   float velocidad = 7;
   boolean enMovimiento = false;
   boolean apuntaDerecha = false;
+  boolean arriba = false;
   
   PImage[] secuenciaDePoder = new PImage[3]; 
   boolean poderActivado = false;
@@ -117,6 +118,21 @@ class Jugadora {
       }
     }
     
+    if(parteDos){
+      if(arriba){
+        posicionY -= velocidad;  
+      }else{
+        posicionY += velocidad;
+      }
+      // Limitar el movimiento en el eje Y para que no salga de la pantalla
+      if (posicionY < 100) {
+        posicionY = 100;  // No dejar que pase por encima de la pantalla
+      } else if (posicionY > height -200) {
+        posicionY = height - 200;  // No dejar que pase por debajo de la pantalla
+      }
+    }
+    
+    
     // Manejo del salto
     if (saltando) {
      posicionY += velocidadSalto;
@@ -130,6 +146,7 @@ class Jugadora {
         }     
     }
   }
+
 
   // Método para activar el poder
   void activarPoder() {
