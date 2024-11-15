@@ -63,4 +63,8 @@ class Nube {
       bola.mostrar();
     }
   }
+  
+  void eliminarTodoPapel(){
+    bolasPapel.clear();
+  }
 }

@@ -6,7 +6,7 @@ Nube nube;
 
 PImage imagenNube, bolaAmarilla, bolaRosa, bolaGris, bolaVerde;
 PImage hadaguia;
-PImage fondoNivel1, fondoNivel2, fondo, fondoRedimensionado;
+PImage fondoNivel1, fondoNivel2, fondoNivel3, fondo, fondoRedimensionado;
 PImage donaImagen;
 PImage[] slimeFrames = new PImage[4];
 PImage[] zombieFrames = new PImage[3];
@@ -58,13 +58,15 @@ void setup() {
   
   hadaguia = loadImage("/juego/HadaGuia.png");
   fondoNivel1 = loadImage("/juego/FondoPalido.jpg"); // Fondo para nivel 1
-  fondoNivel2 = loadImage("/juego/FondoFuerte.jpg"); // Fondo para nivel 2
+  fondoNivel2 = loadImage("/juego/Fondo2tonos.jpg"); // Fondo para nivel 2
+  fondoNivel3 = loadImage("/juego/FondoFuerte.jpg"); // Fondo para nivel 3
   
   // Redimensionar los fondos
   fondoNivel1.resize(width, height);
   fondoNivel2.resize(width, height);
+  fondoNivel3.resize(width, height);
   
-  fondo = fondoNivel2;
+  fondo = fondoNivel3;
   
   
   // Inicializar la clase DialogoHada con los diálogos y la imagen del hada
@@ -82,7 +84,7 @@ void setup() {
   bolaGris = loadImage("/bolasdepapel/gris.png");
   bolaVerde = loadImage("/bolasdepapel/verde.png");
   
-  donaImagen = loadImage("/enemigos/rollut.png"); // Cargar la imagen de la dona rollut
+  donaImagen = loadImage("/enemigos/rollut2.png"); // Cargar la imagen de la dona rollut
   
    // Cargar los frames de animación del monstruo slime
   slimeFrames[0] = loadImage("/enemigos/slime/1.png");
@@ -115,6 +117,7 @@ void draw() {
   image(fondo, fondoX + fondo.width, 0);
   
   if (!juegoIniciado) {
+    honeymoon.reiniciar();
     honeymoon.mostrar();
     dialogoHada.mostrar(); 
   } else {
@@ -163,7 +166,8 @@ void draw() {
               }
               
               // Verificar si el contadorBolas ha alcanzado el límite para nivel 2
-              if (honeymoon.contadorBolas > 15) {
+              if (honeymoon.contadorBolas > 20) {
+                fondo = fondoNivel3;
                 nivel1Completado = true; // Cambiar a nivel 2
                 dialogoHada = new Dialogo(dialogoNivel1, hadaguia); 
                 juegoIniciado = false;
@@ -223,9 +227,13 @@ void draw() {
             
       
     }else{
-      textSize(60);
+      textSize(90);
         //fill(255, 0, 0);
-        text("Game Over", width / 2 - 160, height / 2);
+        textAlign(CENTER);
+        text("Game Over \n", width / 2 , height / 2);
+        textSize(50);
+        text("(Presiona R para reiniciar el nivel)", width / 2 , height / 2+90);
+        textAlign(LEFT);
         noLoop(); // Detiene el juego
     }
 
@@ -237,7 +245,25 @@ void draw() {
   }
 }
 
-
+void reinicioDeNivel() {
+    if(!nivel1Completado){
+      juegoIniciado = false;
+        fondo = fondoNivel1;
+        
+        for (Enemigo enemigo : enemigos) {
+                if(enemigo instanceof MonstruoSlime){
+                  ((MonstruoSlime) enemigo).desaparecer();
+                }
+              }
+        slimeAgregado = false;
+        nube.eliminarTodoPapel();
+        
+    }else {
+      juegoIniciado = false;
+      ((Zombie)zombie).reiniciar();
+      println("AQUIII");
+    }
+}
 
 void keyPressed() {
  if (!juegoIniciado) {
@@ -257,6 +283,13 @@ void keyPressed() {
     } else if (keyCode == UP) { // Tecla para saltar
       honeymoon.saltar();
       //println("Salto!");
+    } else if (key == 'r' || key == 'R') {
+              
+        loop();
+        honeymoon.reiniciar(); // Reiniciar el estado de la Jugadora
+        
+        // Reiniciar otros elementos del juego, si es necesario
+        reinicioDeNivel();
     }
   }
 }

@@ -30,6 +30,17 @@ class Dialogo {
 
   // Comprobar si se ha terminado el diálogo
   boolean dialogoTerminado() {
-    return estadoDialogo >= dialogos.length;
+    if(estadoDialogo >= dialogos.length){
+      estadoDialogo = 0;
+      return true;
+    }else{
+      return false;
+    }
+    
+    //return estadoDialogo >= dialogos.length;
   }
+  
+  
+  
+  
 }

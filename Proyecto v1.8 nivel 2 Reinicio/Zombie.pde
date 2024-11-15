@@ -15,8 +15,9 @@ class Zombie extends Enemigo {
     this.currentFrame = 0;
     ancho = anchozombie; 
     alto = altozombie;
-    
   }
+  
+
 
   @Override
   void mover() {
@@ -35,5 +36,10 @@ class Zombie extends Enemigo {
   @Override
   void mostrar() {
       image(imagen, x, y, ancho, alto);
+  }
+  
+  void reiniciar(){
+    x = width;
+    currentFrame = 0;
   }
 }
