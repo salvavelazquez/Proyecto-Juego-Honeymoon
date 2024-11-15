@@ -8,13 +8,17 @@ PImage imagenNube, bolaAmarilla, bolaRosa, bolaGris, bolaVerde;
 PImage hadaguia;
 PImage fondoNivel1, fondoNivel2, fondoNivel3, fondo, fondoRedimensionado;
 PImage donaImagen;
+PImage plataformaChocolate;
+
+
 PImage[] slimeFrames = new PImage[4];
 PImage[] zombieFrames = new PImage[3];
+
 
 float  fondoX = 0;  // Variable para controlar la posición del fondo
 float  fondoVelocidad = 10;  // Velocidad de desplazamiento del fondo
 
-
+ArrayList<Plataforma> plataformas;
 ArrayList<Enemigo> enemigos;
 String[] dialogoInicial = {
   "    ¡Hola Honeymoon! Tienes una nueva misión!!",
@@ -33,16 +37,17 @@ String[] dialogoNivel1 = {
   "Continua con tu viaje, fuerzas!!"
 };
 
-//int estadoDialogo = 0; // Controla el estado del diálogo
 boolean juegoIniciado = false; // Controla si el juego ha comenzado
 boolean nivel1Completado = false; // Variables para manejar el círculo y los niveles
 boolean slimeAgregado = false;
 boolean zombieAgregado = false;
+float plataformaX = 200;
+int indicePlataformaActual = -1;
 
 
 void setup() {
   fullScreen();
-  // /********* Define las coordenadas de inicio de la segunda pantalla***/
+   /********* Define las coordenadas de inicio de la segunda pantalla***/
   //int pantallaPrincipalWidth = displayWidth; // Ancho de la pantalla principal
   //int segundaPantallaX = pantallaPrincipalWidth; // Mueve a la derecha de la pantalla principal
   //int segundaPantallaY = 0; // Mantiene la ventana en la parte superior de la segunda pantalla
@@ -96,7 +101,19 @@ void setup() {
   zombieFrames[1] = loadImage("/enemigos/zombie/2.png");
   zombieFrames[2] = loadImage("/enemigos/zombie/3.png");
   
-  zombie = new Zombie(zombieFrames, width-100, height -364);
+  plataformaChocolate = loadImage("/juego/barra.PNG");
+  
+  plataformas = new ArrayList<Plataforma>();
+  
+  // Agregar plataformas en posiciones fijas
+  
+  plataformas.add(new Plataforma(plataformaChocolate, -10,500,100,42));
+  plataformas.add(new Plataforma(plataformaChocolate, -2500,500,800,42));
+  plataformas.add(new Plataforma(plataformaChocolate, -3000,400,100,52));
+  plataformas.add(new Plataforma(plataformaChocolate, -3200,300,200,52));
+  plataformas.add(new Plataforma(plataformaChocolate, -3700,250,400,52));
+  
+  zombie = new Zombie(zombieFrames, width-100, height -464);
   
   // Inicializar la lista de enemigos con 3 donas
   enemigos = new ArrayList<Enemigo>();
@@ -104,8 +121,6 @@ void setup() {
     enemigos.add(new Rollut(donaImagen, random(100, width - 100), random(100, height - 150)));
   }
   
-  // Crear el monstruo slime y lo agrega a la lista de enemigos
-  //enemigos.add(new MonstruoSlime(slimeFrames, 200, height - 150));
 
 }
 
@@ -176,11 +191,6 @@ void draw() {
             } else {
               // Nivel 2: fondo en movimiento
               
-              //if (!zombieAgregado) {
-              //      enemigos.add(new Zombie(zombieFrames, width, height - 180)); // Agrega el zombie desde el lado derecho
-              //      zombieAgregado = true;
-              //}
-              
               fill(255);
               textSize(30);
               text("Vidas: " + honeymoon.vidas, width-370, 80);
@@ -190,9 +200,11 @@ void draw() {
               
               if (honeymoon.enMovimiento) {
                 if (honeymoon.apuntaDerecha) {
+                  plataformaX-= fondoVelocidad;
                   fondoX -= fondoVelocidad; // Desplazar el fondo hacia la izquierda
                 } else {
                   fondoX += fondoVelocidad; // Desplazar el fondo hacia la derecha
+                  plataformaX += fondoVelocidad;
                 }
               }
               
@@ -209,23 +221,37 @@ void draw() {
               }
               
               
-              // Mostrar y mover enemigos en el nivel 2, incluido el zombie
+              int i = 0;
+              // Mostrar y verificar colisiones con las plataformas
+              for (Plataforma plataforma : plataformas) {
+                plataforma.mostrar(plataformaX);
+                if (plataforma.colisionaCon(honeymoon.posicionX, honeymoon.posicionY, honeymoon.ancho, honeymoon.alto, plataformaX)) {
+                   honeymoon.posicionY = plataforma.y - honeymoon.alto-2; // Honeymoon se sitúa en la plataforma
+                   honeymoon.saltando = false; 
+                   honeymoon.sobrePlataforma = true;  
+                   indicePlataformaActual = i;
+                }
+                
+                if(indicePlataformaActual == i && honeymoon.sobrePlataforma){
+                  if (!plataforma.fueraLimites(honeymoon.posicionX, honeymoon.ancho, plataformaX)) {
+                    honeymoon.saltando = true; // Puede que necesites esta variable para manejar la gravedad
+                    honeymoon.sobrePlataforma = false;
+                   
+                  }
+                    
+                }
+                
+                 i++;
+                
+              }
+              
+              // Mostrar y mover al zombie nivel 2
               zombie.mover();
               zombie.mostrar();
               honeymoon.manejarColisionEnemigo(zombie);
-              
+                
             }
-            
-      
-            
-            //for (Enemigo enemigo : enemigos) {
-            //  enemigo.mover();
-            //  enemigo.mostrar();
-            //  honeymoon.manejarColisionEnemigo(enemigo); // Detectar colisiones
-            //}
-            
-            
-      
+             
     }else{
       textSize(90);
         //fill(255, 0, 0);
@@ -237,7 +263,6 @@ void draw() {
         noLoop(); // Detiene el juego
     }
 
-    
     
     honeymoon.mover();
     honeymoon.manejarPoder(); 
@@ -261,7 +286,13 @@ void reinicioDeNivel() {
     }else {
       juegoIniciado = false;
       ((Zombie)zombie).reiniciar();
-      println("AQUIII");
+      plataformas.clear();
+      plataformas.add(new Plataforma(plataformaChocolate, -10-plataformaX,500,100,42));
+      plataformas.add(new Plataforma(plataformaChocolate, -2500-plataformaX,500,800,42));
+      plataformas.add(new Plataforma(plataformaChocolate, -3000-plataformaX,400,100,52));
+      plataformas.add(new Plataforma(plataformaChocolate, -3200-plataformaX,300,200,52));
+      plataformas.add(new Plataforma(plataformaChocolate, -3700-plataformaX,250,400,52));
+      
     }
 }
 

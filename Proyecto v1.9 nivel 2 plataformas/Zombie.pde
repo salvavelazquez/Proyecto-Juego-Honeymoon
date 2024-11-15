@@ -4,9 +4,8 @@ class Zombie extends Enemigo {
   int frameDelay = 5;
   int frameCount = 0;
   float speed = 1; // Velocidad del zombie
-  // Ajustar el tamaño aquí
-  float anchozombie = 339; // Ancho del monstruo slime (cambiar a un tamaño mayor)
-  float altozombie = 317; // Alto del monstruo slime (cambiar a un tamaño mayor)
+  float anchozombie = 439; // Ancho del monstruo slime (cambiar a un tamaño mayor)
+  float altozombie = 417; // Alto del monstruo slime (cambiar a un tamaño mayor)
   
 
   Zombie(PImage[] frames, float startX, float startY) {

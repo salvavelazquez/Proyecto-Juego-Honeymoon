@@ -1,6 +1,9 @@
 // Clase Jugador que maneja al personaje y su comportamiento
 class Jugadora {
   float posicionY; // Posición en Y de Honeymon
+  float ancho; // Ancho de la jugadora
+  float alto; // Altura de la jugadora
+
   float velocidadSalto = -15; // Velocidad inicial del salto
   float gravedad = 0.7; // Gravedad que afecta el salto
   boolean saltando = false; // Estado para saber si está saltando
@@ -22,7 +25,7 @@ class Jugadora {
   
   int contadorBolas = 0; // Contador para las bolas de papel recogidas
   
-  int vidas = 5; // Añadido: Inicializamos a Honeymon con 4 vidas
+  int vidas = 4; // Añadido: Inicializamos a Honeymon con 4 vidas
   boolean colisionandoConDona = false;
   
   boolean estaHerido = false; // Indica si Honeymon está herido
@@ -30,6 +33,7 @@ class Jugadora {
   int duracionHerido = 30; // Duración del efecto (frames)
   
   private boolean juegoTerminado;
+  boolean sobrePlataforma;
 
   // Constructor para inicializar las imágenes y el estado inicial
   Jugadora() {
@@ -46,6 +50,9 @@ class Jugadora {
     imagenActual = miraIzquierda;
     posicionX = width - 200;
     posicionY = height - 180;
+    ancho = 104;
+    alto = 118;
+    sobrePlataforma = false;
   }
   
   // Método para mostrar al personaje en pantalla
@@ -69,8 +76,7 @@ class Jugadora {
     } else{
         image(imagenActual, posicionX, posicionY);
     }
-    
-    //image(imagenActual, posicionX, posicionY);
+   
     
     noTint();
     // Controlar el temporizador para el estado herido
@@ -89,7 +95,7 @@ class Jugadora {
           velocidadSalto = -15; // Define la velocidad inicial de salto
       }
   }
-
+ 
 
   // Método para mover el personaje
   void mover() {
@@ -111,14 +117,15 @@ class Jugadora {
     
     // Manejo del salto
     if (saltando) {
-        posicionY += velocidadSalto;
+     posicionY += velocidadSalto;
         velocidadSalto += gravedad; // Aplica gravedad para hacer que baje
 
         if (posicionY >= height - 180) { // Chequeo para que caiga al suelo
             posicionY = height - 180;
             saltando = false; // Termina el salto cuando toca el suelo
+         
             velocidadSalto = 0;
-        }
+        }     
     }
   }
 
@@ -174,13 +181,6 @@ class Jugadora {
   
   // Método para verificar colisión con el enemigo (dona)
   boolean verificarColisionEnemigo(Enemigo enemigo) {
-    //println(enemigo.ancho);
-    // Colisión simple basada en la distancia entre los centros de Honeymon y el enemigo
-    //if (posicionX < enemigo.x + enemigo.ancho &&
-    //       posicionX + imagenActual.width > enemigo.x &&
-    //       posicionY < enemigo.y + enemigo.alto &&
-    //       posicionY + imagenActual.height > enemigo.y) {
-    //  return true;
     if (dist(posicionX, posicionY+20, enemigo.x + enemigo.ancho / 2, enemigo.y + enemigo.alto / 2) < (enemigo.ancho / 2 + 25)) {
       return true;
     }
