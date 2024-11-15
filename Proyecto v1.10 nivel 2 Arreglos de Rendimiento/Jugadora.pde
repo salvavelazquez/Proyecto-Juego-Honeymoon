@@ -10,7 +10,7 @@ class Jugadora {
     
   
   PImage miraDerecha, miraIzquierda, caminaDerecha, caminaIzquierda;
-  PImage imagenActual;
+  PImage imagenActual,alzar;
   float posicionX;
   float velocidad = 7;
   boolean enMovimiento = false;
@@ -46,6 +46,8 @@ class Jugadora {
     secuenciaDePoder[0] = loadImage("/poder/1.png");
     secuenciaDePoder[1] = loadImage("/poder/2.png");
     secuenciaDePoder[2] = loadImage("/poder/3.png");
+    
+    alzar = loadImage("/caminar/alzar.png");
     
     imagenActual = miraIzquierda;
     posicionX = width - 200;
@@ -181,9 +183,14 @@ class Jugadora {
   
   // Método para verificar colisión con el enemigo (dona)
   boolean verificarColisionEnemigo(Enemigo enemigo) {
-    if (dist(posicionX, posicionY+20, enemigo.x + enemigo.ancho / 2, enemigo.y + enemigo.alto / 2) < (enemigo.ancho / 2 + 25)) {
+    if (enemigo instanceof Zombie) {
+      if (dist(posicionX, posicionY+20, plataformaX+enemigo.x + enemigo.ancho / 2, enemigo.y + enemigo.alto / 2) < (enemigo.ancho / 2 + 25)) {
+        return true;
+      }
+    }else if (dist(posicionX, posicionY+20, enemigo.x + enemigo.ancho / 2, enemigo.y + enemigo.alto / 2) < (enemigo.ancho / 2 + 25)) {
       return true;
     }
+    
     return false;
   }
   
@@ -226,7 +233,13 @@ class Jugadora {
     posicionX = width - 200; // Reiniciar posición X
     posicionY = height - 180; // Reiniciar posición Y
     juegoTerminado = false; // Marcar que el juego no está terminado
-    imagenActual = miraIzquierda;
+    if(dialogoCarameloMostrado){
+      imagenActual = alzar;
+    }else{
+      imagenActual = miraIzquierda;
+    }
+    
+    
   }
 
 

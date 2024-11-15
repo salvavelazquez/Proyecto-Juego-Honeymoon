@@ -1,14 +1,18 @@
+import java.awt.Canvas;
+
 Jugadora honeymoon;
 Enemigo enemigo; // Declara el objeto enemigo
 Enemigo zombie;
 Dialogo dialogoHada;
 Nube nube;   
 
+
 PImage imagenNube, bolaAmarilla, bolaRosa, bolaGris, bolaVerde;
 PImage hadaguia;
 PImage fondoNivel1, fondoNivel2, fondoNivel3, fondo, fondoRedimensionado;
-PImage donaImagen;
+PImage donaImagen, zombieaux;
 PImage plataformaChocolate;
+PImage carameloImagen;
 
 
 PImage[] slimeFrames = new PImage[4];
@@ -16,7 +20,7 @@ PImage[] zombieFrames = new PImage[3];
 
 
 float  fondoX = 0;  // Variable para controlar la posición del fondo
-float  fondoVelocidad = 10;  // Velocidad de desplazamiento del fondo
+float  fondoVelocidad = 8;  // Velocidad de desplazamiento del fondo
 
 ArrayList<Plataforma> plataformas;
 ArrayList<Enemigo> enemigos;
@@ -37,11 +41,18 @@ String[] dialogoNivel1 = {
   "Continua con tu viaje, fuerzas!!"
 };
 
-boolean juegoIniciado = false; // Controla si el juego ha comenzado
-boolean nivel1Completado = false; // Variables para manejar el círculo y los niveles
+boolean dialogoCarameloMostrado = false;
+String[] dialogoCaramelo = {
+    "          ¡Has encontrado el caramelo especial!",
+    "       ahora podrás volar y lanzar bolas de fuego! :D "
+};
+
+boolean juegoIniciado = true; // Controla si el juego ha comenzado
+boolean nivel1Completado = true; // Variables para manejar el círculo y los niveles
+boolean parteDos = false;
 boolean slimeAgregado = false;
 boolean zombieAgregado = false;
-float plataformaX = 200;
+float plataformaX = 0;
 int indicePlataformaActual = -1;
 
 
@@ -97,23 +108,33 @@ void setup() {
   slimeFrames[2] = loadImage("/enemigos/slime/3.png");
   slimeFrames[3] = loadImage("/enemigos/slime/4.png");
   
-  zombieFrames[0] = loadImage("/enemigos/zombie/1.png");
-  zombieFrames[1] = loadImage("/enemigos/zombie/2.png");
-  zombieFrames[2] = loadImage("/enemigos/zombie/3.png");
+  zombieaux = loadImage("/enemigos/zombie/1.png");
+  zombieaux.resize(439, 417);
+  zombieFrames[0] = zombieaux;
+  
+  zombieaux = loadImage("/enemigos/zombie/2.png");
+  zombieaux.resize(439, 417);
+  zombieFrames[1] = zombieaux;
+  
+  zombieaux = loadImage("/enemigos/zombie/3.png");
+  zombieaux.resize(439, 417);
+  zombieFrames[2] = zombieaux;
   
   plataformaChocolate = loadImage("/juego/barra.PNG");
+  carameloImagen = loadImage("/juego/caramelo.png");
+  carameloImagen.resize(100, 70);
   
   plataformas = new ArrayList<Plataforma>();
   
   // Agregar plataformas en posiciones fijas
   
   plataformas.add(new Plataforma(plataformaChocolate, -10,500,100,42));
-  plataformas.add(new Plataforma(plataformaChocolate, -2500,500,800,42));
+  plataformas.add(new Plataforma(plataformaChocolate, -2600,500,800,42));
   plataformas.add(new Plataforma(plataformaChocolate, -3000,400,100,52));
   plataformas.add(new Plataforma(plataformaChocolate, -3200,300,200,52));
   plataformas.add(new Plataforma(plataformaChocolate, -3700,250,400,52));
   
-  zombie = new Zombie(zombieFrames, width-100, height -464);
+  zombie = new Zombie(zombieFrames, width+100, height -464);
   
   // Inicializar la lista de enemigos con 3 donas
   enemigos = new ArrayList<Enemigo>();
@@ -121,7 +142,9 @@ void setup() {
     enemigos.add(new Rollut(donaImagen, random(100, width - 100), random(100, height - 150)));
   }
   
-
+  // Solicita el foco para la ventana al inicio
+  Canvas canvas = (Canvas) surface.getNative();
+  canvas.requestFocus();
 }
 
 void draw() {
@@ -190,66 +213,76 @@ void draw() {
               
             } else {
               // Nivel 2: fondo en movimiento
-              
-              fill(255);
-              textSize(30);
-              text("Vidas: " + honeymoon.vidas, width-370, 80);
-              
-              // Mantener honeymoon en el centro de la pantalla
-              honeymoon.posicionX = width / 2;
-              
-              if (honeymoon.enMovimiento) {
-                if (honeymoon.apuntaDerecha) {
-                  plataformaX-= fondoVelocidad;
-                  fondoX -= fondoVelocidad; // Desplazar el fondo hacia la izquierda
-                } else {
-                  fondoX += fondoVelocidad; // Desplazar el fondo hacia la derecha
-                  plataformaX += fondoVelocidad;
-                }
-              }
-              
-              
-              
-              
-              
-              // Mantener el fondo en bucle
-              if (fondoX <= -fondo.width) {
-                fondoX = 0;
-              }
-              if (fondoX >= 0) {
-                fondoX = -fondo.width;
-              }
-              
-              
-              int i = 0;
-              // Mostrar y verificar colisiones con las plataformas
-              for (Plataforma plataforma : plataformas) {
-                plataforma.mostrar(plataformaX);
-                if (plataforma.colisionaCon(honeymoon.posicionX, honeymoon.posicionY, honeymoon.ancho, honeymoon.alto, plataformaX)) {
-                   honeymoon.posicionY = plataforma.y - honeymoon.alto-2; // Honeymoon se sitúa en la plataforma
-                   honeymoon.saltando = false; 
-                   honeymoon.sobrePlataforma = true;  
-                   indicePlataformaActual = i;
-                }
-                
-                if(indicePlataformaActual == i && honeymoon.sobrePlataforma){
-                  if (!plataforma.fueraLimites(honeymoon.posicionX, honeymoon.ancho, plataformaX)) {
-                    honeymoon.saltando = true; // Puede que necesites esta variable para manejar la gravedad
-                    honeymoon.sobrePlataforma = false;
-                   
+              if(!parteDos){
+                  // Mantener honeymoon en el centro de la pantalla
+                  honeymoon.posicionX = width / 2;
+                  
+                  if (honeymoon.enMovimiento) {
+                    if (honeymoon.apuntaDerecha) {
+                      plataformaX-= fondoVelocidad;
+                      fondoX -= fondoVelocidad; // Desplazar el fondo hacia la izquierda
+                    } else {
+                      fondoX += fondoVelocidad; // Desplazar el fondo hacia la derecha
+                      plataformaX += fondoVelocidad;
+                    }
                   }
+                  
+                  
+                  
+                  
+                  
+                  // Mantener el fondo en bucle
+                  if (fondoX <= -fondo.width) {
+                    fondoX = 0;
+                  }
+                  if (fondoX >= 0) {
+                    fondoX = -fondo.width;
+                  }
+                  
+                  
+                  int i = 0;
+                  // Mostrar y verificar colisiones con las plataformas
+                  for (Plataforma plataforma : plataformas) {
+                    plataforma.mostrar(plataformaX);
+                    if (plataforma.colisionaCon(honeymoon.posicionX, honeymoon.posicionY, honeymoon.ancho, honeymoon.alto, plataformaX)) {
+                       honeymoon.posicionY = plataforma.y - honeymoon.alto-2; // Honeymoon se sitúa en la plataforma
+                       honeymoon.saltando = false; 
+                       honeymoon.sobrePlataforma = true;  
+                       indicePlataformaActual = i;
+                    }
                     
+                    if(indicePlataformaActual == i && honeymoon.sobrePlataforma){
+                      if (!plataforma.fueraLimites(honeymoon.posicionX, honeymoon.ancho, plataformaX)) {
+                        honeymoon.saltando = true; // Puede que necesites esta variable para manejar la gravedad
+                        honeymoon.sobrePlataforma = false;
+                       
+                      }
+                        
+                    }
+                    
+                     i++;
+                    
+                  }
+                  
+                  // Mostrar y mover al zombie nivel 2
+                  zombie.mover();
+                  zombie.mostrar();
+                  honeymoon.manejarColisionEnemigo(zombie);                      
+              
+              }else{
+                if(!dialogoCarameloMostrado){
+                          dialogoHada = new Dialogo(dialogoCaramelo, hadaguia);
+                          juegoIniciado = false;
+                          dialogoCarameloMostrado = true;
+                          fondoX = 0;
                 }
                 
-                 i++;
-                
+                fill(255);
+                textSize(30);
+                text("Vidas: " + honeymoon.vidas, width-370, 80);              
               }
               
-              // Mostrar y mover al zombie nivel 2
-              zombie.mover();
-              zombie.mostrar();
-              honeymoon.manejarColisionEnemigo(zombie);
-                
+                             
             }
              
     }else{
@@ -286,13 +319,8 @@ void reinicioDeNivel() {
     }else {
       juegoIniciado = false;
       ((Zombie)zombie).reiniciar();
-      plataformas.clear();
-      plataformas.add(new Plataforma(plataformaChocolate, -10-plataformaX,500,100,42));
-      plataformas.add(new Plataforma(plataformaChocolate, -2500-plataformaX,500,800,42));
-      plataformas.add(new Plataforma(plataformaChocolate, -3000-plataformaX,400,100,52));
-      plataformas.add(new Plataforma(plataformaChocolate, -3200-plataformaX,300,200,52));
-      plataformas.add(new Plataforma(plataformaChocolate, -3700-plataformaX,250,400,52));
-      
+      //plataformas.clear();
+      plataformaX = 0;
     }
 }
 

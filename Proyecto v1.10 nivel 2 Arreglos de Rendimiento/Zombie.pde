@@ -1,11 +1,13 @@
 class Zombie extends Enemigo {
   PImage[] frames;
   int currentFrame;
-  int frameDelay = 5;
+  int frameDelay = 10;
   int frameCount = 0;
-  float speed = 1; // Velocidad del zombie
+  float speed = 9; // Velocidad del zombie
   float anchozombie = 439; // Ancho del monstruo slime (cambiar a un tamaño mayor)
   float altozombie = 417; // Alto del monstruo slime (cambiar a un tamaño mayor)
+  PoderCaramelo caramelo;
+  boolean carameloActivado = false;
   
 
   Zombie(PImage[] frames, float startX, float startY) {
@@ -22,6 +24,20 @@ class Zombie extends Enemigo {
   void mover() {
     // Movimiento del zombie hacia la izquierda para perseguir a Honeymon
     x -= speed;
+    
+    // Verificar si el zombie ha alcanzado el límite de la pantalla
+    if (x < -4500){
+       // Agregar un nuevo caramelo en la posición actual del zombie
+       if(carameloActivado == false ){
+         carameloActivado = true;
+         caramelo = new PoderCaramelo(-2800, 20, carameloImagen);
+         
+       }
+       
+       
+       actualizarCaramelo();
+    }
+    
 
     // Actualización de la animación
     frameCount++;
@@ -34,11 +50,19 @@ class Zombie extends Enemigo {
   
   @Override
   void mostrar() {
-      image(imagen, x, y, ancho, alto);
+      image(imagen, x+plataformaX, y);
+  }
+  
+  void actualizarCaramelo() {
+    caramelo.mostrar();
+    caramelo.mover();
+    caramelo.colisionaCon();
   }
   
   void reiniciar(){
     x = width;
     currentFrame = 0;
+    carameloActivado = false;
+    parteDos = false;
   }
 }

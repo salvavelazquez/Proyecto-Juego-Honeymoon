@@ -21,6 +21,7 @@ class Dialogo {
     
     // Mostrar imagen del hada
     image(hada, width - 400, height / 2 + 50, 130, 130);
+    if(dialogoCarameloMostrado) image(carameloImagen, width - 230, height - 280);
   }
 
   // Avanzar al siguiente diálogo
