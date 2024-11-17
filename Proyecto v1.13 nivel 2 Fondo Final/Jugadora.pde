@@ -292,6 +292,8 @@ class Jugadora {
     
     
   }
-
+   void cambio(){
+     imagenActual = alzar;
+   }
 
 }

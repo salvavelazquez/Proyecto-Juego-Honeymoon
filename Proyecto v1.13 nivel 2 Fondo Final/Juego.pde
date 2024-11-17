@@ -13,7 +13,7 @@ Nube nube;
 
 
 PImage imagenNube, bolaAmarilla, bolaRosa, bolaGris, bolaVerde;
-PImage hadaguia;
+PImage hadaguia, castillo, reina , corona;
 PImage fondoNivel1, fondoNivel2, fondoNivel3,fondoNivel4, fondo, fondoRedimensionado;
 PImage donaImagen, zombieaux;
 PImage plataformaChocolate;
@@ -103,6 +103,10 @@ void setup() {
   fondoNivel2 = loadImage("/juego/Fondo2tonos.jpg"); // Fondo para nivel 2
   fondoNivel3 = loadImage("/juego/FondoFuerte.jpg"); // Fondo para nivel 3
   fondoNivel4 = loadImage("/juego/FondoInverso.jpg");
+  castillo = loadImage("/juego/castillo.png");
+  castillo.resize(757, 737);
+  reina = loadImage("/juego/reina1.png");
+  corona = loadImage("/juego/corona.png");
   vampiro = loadImage("/enemigos/vampirodona.png");  // Carga la imagen del vampiro
   vampiro.resize(209, 252); 
   
@@ -355,7 +359,10 @@ void draw() {
                     fill(#FF4BDE);
                     textSize(30);
                     text("Vidas: " + honeymoon.vidas, width-150, 50);  
-                     
+                    
+                    
+                         
+                         
                     }
                 
                 }
@@ -380,6 +387,20 @@ void draw() {
     honeymoon.mover();
     honeymoon.manejarPoder(); 
     honeymoon.mostrar();
+    
+    if(!((Vampiro) vampirut).estaVivo()){
+                      //dialogoCarameloMostrado = true;
+                      noTint();  
+                      image(fondoNivel3, fondoX, 0);
+                      image(castillo, 0, height-765);
+                      image(reina,300,height/2-40,140,140);
+                      image(honeymoon.alzar, width/2+170, height-190);   
+                      image(corona,width/2+130,height-300,90,70);
+                         fill(#FFFFFF);
+                         textSize(80);
+                         text("GANASTE", width/2-150, height/2);
+                         noLoop();
+                    }
   }
 }
 
@@ -413,7 +434,7 @@ void reinicioDeNivel() {
       dialogoHada = new Dialogo(dialogoNivel1, hadaguia); 
       ((Vampiro)vampirut).x = - 600;
       ((Vampiro)vampirut).y = height / 2 - vampiro.height / 2;
-      ((Vampiro)vampirut).vida = 10;
+      ((Vampiro)vampirut).vida = 30;
       ((Vampiro)vampirut).rolluts.clear();
       activaSonidoDos = false;
       sonidoDos.stop();
